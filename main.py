@@ -20,7 +20,7 @@ DEEPGRAM_API_KEY = os.getenv("DEEPGRAM_API_KEY")
 RECORDING_PATH = "wavs/recording.wav"
 
 gpt_client = openai.Client(api_key=OPENAI_API_KEY)
-context = "You are Sam, a personal assistant created by Alex. Your answers should be limited to 1-2 sentences."
+context = "You are Sam, Alex's helpful secretary. Your answers should be limited to 1-2 short sentences."
 
 mixer.init()
 
@@ -81,7 +81,7 @@ if __name__ == "__main__":
         print(f"USER: {string_words}")
         # Get response from GPT-3
         context += f"\nAlex: {string_words}\nSam: "
-        response = request_gpt(string_words)
+        response = request_gpt(context)
         print(f"AI: {response}")
         context += response
         # Convert response to audio
