@@ -22,7 +22,9 @@ elevenlabs.set_api_key(os.getenv("ELEVENLABS_API_KEY"))
 RECORDING_PATH = "wavs/recording.wav"
 
 gpt_client = openai.Client(api_key=OPENAI_API_KEY)
+deepgram = Deepgram(DEEPGRAM_API_KEY)
 context = "You are Jarvis, Alex's helpful and witty assistant. Your answers should be limited to 1-2 short sentences."
+conversation = {"Conversation": []}
 
 mixer.init()
 
@@ -76,13 +78,15 @@ if __name__ == "__main__":
         print("Done listening.")
         # Transcribe audio
         current_time = time()
-        deepgram = Deepgram(DEEPGRAM_API_KEY)
         loop = asyncio.new_event_loop()
         asyncio.set_event_loop(loop)
         words = loop.run_until_complete(transcribe(RECORDING_PATH))
         string_words = " ".join(
             word_dict.get("word") for word_dict in words if "word" in word_dict
         )
+        # Add string_words as a new line to conv.txt
+        with open("conv.txt", "a") as f:
+            f.write(f"{string_words}\n")
         transcription_time = time() - current_time
         print(f"Finished transcribing in {transcription_time:.2f} seconds.")
         # Get response from GPT-3
@@ -103,6 +107,9 @@ if __name__ == "__main__":
         # Play response
         print("Speaking...")
         sound = mixer.Sound("wavs/response.wav")
+        # Add response as a new line to conv.txt
+        with open("conv.txt", "a") as f:
+            f.write(f"{response}\n")
         sound.play()
         pygame.time.wait(int(sound.get_length() * 1000))
         print(f"\n --- USER: {string_words}\n --- JARVIS: {response}\n")

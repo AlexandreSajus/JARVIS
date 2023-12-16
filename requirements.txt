@@ -5,3 +5,4 @@ pyaudio==0.2.14
 rhasspy-silence==0.4.0
 elevenlabs==0.2.27
 pygame==2.5.2
+taipy==3.0.0
