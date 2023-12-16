@@ -1,12 +1,12 @@
 import os
 from os import PathLike
+from time import time
 import asyncio
 from dotenv import load_dotenv
-from typing import List, Optional, TypeVar, Union, IO
+from typing import Union
 
 import openai
 from deepgram import Deepgram
-from gtts import gTTS
 import pygame
 from pygame import mixer
 import elevenlabs
@@ -71,10 +71,11 @@ async def transcribe(
 if __name__ == "__main__":
     while True:
         # Record audio
-        print("Listening...", end="")
+        print("Listening...")
         SpeechToText()
+        print("Done listening.")
         # Transcribe audio
-        print("Transcribing...")
+        current_time = time()
         deepgram = Deepgram(DEEPGRAM_API_KEY)
         loop = asyncio.new_event_loop()
         asyncio.set_event_loop(loop)
@@ -82,17 +83,23 @@ if __name__ == "__main__":
         string_words = " ".join(
             word_dict.get("word") for word_dict in words if "word" in word_dict
         )
+        transcription_time = time() - current_time
+        print(f"Finished transcribing in {transcription_time:.2f} seconds.")
         # Get response from GPT-3
-        print("Generating response...")
+        current_time = time()
         context += f"\nAlex: {string_words}\nJarvis: "
         response = request_gpt(context)
         context += response
+        gpt_time = time() - current_time
+        print(f"Finished generating response in {gpt_time:.2f} seconds.")
         # Convert response to audio
-        print("Converting to audio...")
+        current_time = time()
         audio = elevenlabs.generate(
             text=response, voice="Adam", model="eleven_monolingual_v1"
         )
         elevenlabs.save(audio, "wavs/response.wav")
+        audio_time = time() - current_time
+        print(f"Finished generating audio in {audio_time:.2f} seconds.")
         # Play response
         print("Speaking...")
         sound = mixer.Sound("wavs/response.wav")
