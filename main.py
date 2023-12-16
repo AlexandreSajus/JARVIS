@@ -9,6 +9,7 @@ from deepgram import Deepgram
 from gtts import gTTS
 import pygame
 from pygame import mixer
+import elevenlabs
 
 from record import SpeechToText
 
@@ -17,10 +18,11 @@ load_dotenv()
 
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 DEEPGRAM_API_KEY = os.getenv("DEEPGRAM_API_KEY")
+elevenlabs.set_api_key(os.getenv("ELEVENLABS_API_KEY"))
 RECORDING_PATH = "wavs/recording.wav"
 
 gpt_client = openai.Client(api_key=OPENAI_API_KEY)
-context = "You are Sam, Alex's helpful secretary. Your answers should be limited to 1-2 short sentences."
+context = "You are Jarvis, Alex's helpful and witty assistant. Your answers should be limited to 1-2 short sentences."
 
 mixer.init()
 
@@ -69,8 +71,10 @@ async def transcribe(
 if __name__ == "__main__":
     while True:
         # Record audio
+        print("Listening...", end="")
         SpeechToText()
         # Transcribe audio
+        print("Transcribing...")
         deepgram = Deepgram(DEEPGRAM_API_KEY)
         loop = asyncio.new_event_loop()
         asyncio.set_event_loop(loop)
@@ -78,17 +82,20 @@ if __name__ == "__main__":
         string_words = " ".join(
             word_dict.get("word") for word_dict in words if "word" in word_dict
         )
-        print(f"USER: {string_words}")
         # Get response from GPT-3
-        context += f"\nAlex: {string_words}\nSam: "
+        print("Generating response...")
+        context += f"\nAlex: {string_words}\nJarvis: "
         response = request_gpt(context)
-        print(f"AI: {response}")
         context += response
         # Convert response to audio
-        tts = gTTS(response)
-        tts.save("wavs/response.wav")
+        print("Converting to audio...")
+        audio = elevenlabs.generate(
+            text=response, voice="Adam", model="eleven_monolingual_v1"
+        )
+        elevenlabs.save(audio, "wavs/response.wav")
         # Play response
+        print("Speaking...")
         sound = mixer.Sound("wavs/response.wav")
         sound.play()
         pygame.time.wait(int(sound.get_length() * 1000))
-        print("LOG: Response played")
+        print(f"\n --- USER: {string_words}\n --- JARVIS: {response}\n")

@@ -42,7 +42,6 @@ def SpeechToText() -> None:
         frames_per_buffer=960,
     )
     audio_source.start_stream()
-    print("LOG: Listening...")
 
     def buffer_to_wav(buffer: bytes) -> bytes:
         """Wraps a buffer of raw audio data in a WAV"""
@@ -77,8 +76,6 @@ def SpeechToText() -> None:
                     )
                     wav_bytes = buffer_to_wav(audio_data)
                     wav_path.write_bytes(wav_bytes)
-                    print(wav_path)
-                    print("file saved")
                     break
                 elif wav_sink:
                     # Write to WAV file
@@ -90,7 +87,6 @@ def SpeechToText() -> None:
     finally:
         try:
             audio_source.close_stream()
-            print("LOG: Recording Saved")
         except Exception:
             pass
 
