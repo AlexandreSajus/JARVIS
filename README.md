@@ -55,7 +55,7 @@ python display.py
 2. In another terminal, run `jarvis.py` to start the voice assistant
 
 ```bash
-python jarvis.py
+python main.py
 ```
 
 - Once ready, both the web interface and the terminal will show `Listening...`
