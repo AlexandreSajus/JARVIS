@@ -73,19 +73,19 @@ async def transcribe(
         return response["results"]["channels"][0]["alternatives"][0]["words"]
 
 
-def log(log: str, mode: str = "a"):
+def log(log: str):
     """
     Print and write to status.txt
     """
     print(log)
-    with open("status.txt", mode) as f:
-        f.write(log + "\n")
+    with open("status.txt", "w") as f:
+        f.write(log)
 
 
 if __name__ == "__main__":
     while True:
         # Record audio
-        log("Listening...", "w")
+        log("Listening...")
         speech_to_text()
         log("Done listening")
 
