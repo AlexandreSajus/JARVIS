@@ -27,7 +27,7 @@ deepgram = Deepgram(DEEPGRAM_API_KEY)
 mixer.init()
 
 # Change the context if you want to change Jarvis' personality
-context = "You are Jarvis, Mélina's human assistant. You are witty and full of personality. Your answers should be limited to 1-2 short sentences."
+context = "You are Jarvis, Alex's human assistant. You are witty and full of personality. Your answers should be limited to 1-2 short sentences."
 conversation = {"Conversation": []}
 RECORDING_PATH = "audio/recording.wav"
 
