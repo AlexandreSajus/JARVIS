@@ -1,5 +1,5 @@
+"""Function for recording audio from a microphone."""
 import io
-import sys
 import typing
 import time
 import wave
@@ -11,10 +11,10 @@ import pyaudio
 pa = pyaudio.PyAudio()
 
 
-def SpeechToText() -> None:
+def speech_to_text() -> None:
     """
     Records audio until silence is detected
-    Saves audio to wavs/tester.wav
+    Saves audio to audio/recording.wav
     """
     recorder = WebRtcVadRecorder(
         vad_mode=3,
@@ -22,7 +22,7 @@ def SpeechToText() -> None:
     )
     recorder.start()
     # file directory
-    wav_sink = "wavs/"
+    wav_sink = "audio/"
     # file name
     wav_filename = "recording"
     if wav_sink:

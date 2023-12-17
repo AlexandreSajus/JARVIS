@@ -1,32 +1,35 @@
+"""Main file for the Jarvis project"""
 import os
 from os import PathLike
 from time import time
 import asyncio
-from dotenv import load_dotenv
 from typing import Union
 
+from dotenv import load_dotenv
 import openai
 from deepgram import Deepgram
 import pygame
 from pygame import mixer
 import elevenlabs
 
-from record import SpeechToText
+from record import speech_to_text
 
-
+# Load API keys
 load_dotenv()
-
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 DEEPGRAM_API_KEY = os.getenv("DEEPGRAM_API_KEY")
 elevenlabs.set_api_key(os.getenv("ELEVENLABS_API_KEY"))
-RECORDING_PATH = "wavs/recording.wav"
 
+# Initialize APIs
 gpt_client = openai.Client(api_key=OPENAI_API_KEY)
 deepgram = Deepgram(DEEPGRAM_API_KEY)
-context = "You are Jarvis, Alex's helpful and witty assistant. Your answers should be limited to 1-2 short sentences."
-conversation = {"Conversation": []}
-
+# mixer is a pygame module for playing audio
 mixer.init()
+
+# Change the context if you want to change Jarvis' personality
+context = "You are Jarvis, Mélina's human assistant. You are witty and full of personality. Your answers should be limited to 1-2 short sentences."
+conversation = {"Conversation": []}
+RECORDING_PATH = "audio/recording.wav"
 
 
 def request_gpt(prompt: str) -> str:
@@ -70,12 +73,22 @@ async def transcribe(
         return response["results"]["channels"][0]["alternatives"][0]["words"]
 
 
+def log(log: str):
+    """
+    Print and write to status.txt
+    """
+    print(log)
+    with open("status.txt", "w") as f:
+        f.write(log)
+
+
 if __name__ == "__main__":
     while True:
         # Record audio
-        print("Listening...")
-        SpeechToText()
-        print("Done listening.")
+        log("Listening...")
+        speech_to_text()
+        log("Done listening")
+
         # Transcribe audio
         current_time = time()
         loop = asyncio.new_event_loop()
@@ -84,29 +97,31 @@ if __name__ == "__main__":
         string_words = " ".join(
             word_dict.get("word") for word_dict in words if "word" in word_dict
         )
-        # Add string_words as a new line to conv.txt
         with open("conv.txt", "a") as f:
             f.write(f"{string_words}\n")
         transcription_time = time() - current_time
-        print(f"Finished transcribing in {transcription_time:.2f} seconds.")
+        log(f"Finished transcribing in {transcription_time:.2f} seconds.")
+
         # Get response from GPT-3
         current_time = time()
         context += f"\nAlex: {string_words}\nJarvis: "
         response = request_gpt(context)
         context += response
         gpt_time = time() - current_time
-        print(f"Finished generating response in {gpt_time:.2f} seconds.")
+        log(f"Finished generating response in {gpt_time:.2f} seconds.")
+
         # Convert response to audio
         current_time = time()
         audio = elevenlabs.generate(
             text=response, voice="Adam", model="eleven_monolingual_v1"
         )
-        elevenlabs.save(audio, "wavs/response.wav")
+        elevenlabs.save(audio, "audio/response.wav")
         audio_time = time() - current_time
-        print(f"Finished generating audio in {audio_time:.2f} seconds.")
+        log(f"Finished generating audio in {audio_time:.2f} seconds.")
+
         # Play response
-        print("Speaking...")
-        sound = mixer.Sound("wavs/response.wav")
+        log("Speaking...")
+        sound = mixer.Sound("audio/response.wav")
         # Add response as a new line to conv.txt
         with open("conv.txt", "a") as f:
             f.write(f"{response}\n")

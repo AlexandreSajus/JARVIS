@@ -41,23 +41,3 @@ body {
     main {
       flex: 0 0 100%;
     }
-    
-    /**** PASSED PROMPT LIST ****/
-    
-    .past_prompts_list .MuiPaper-root {
-      background-color: var(--color-background);
-    }
-    
-    .past_prompts_list li + li {
-      border-top: 1px solid var(--color-paper);
-    }
-    
-    .past_prompts_list .MuiTreeItem-content {
-      font-style: italic;
-      padding: var(--spacing-half);
-      user-select: text !important;
-      cursor: pointer;
-    }
-    .past_prompts_list .MuiTreeItem-iconContainer {
-      display: none;
-    }
