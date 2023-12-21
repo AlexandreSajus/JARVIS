@@ -25,6 +25,8 @@ Your own voice personal assistant: Voice to Text to LLM to Speech, displayed in 
 
 ## Requirements
 
+**Python 3.8 - 3.11**
+
 Make sure you have the following API keys:
 - <a href="https://developers.deepgram.com/docs/authenticating" target="_blank">Deepgram</a>
 - <a href="https://platform.openai.com/account/api-keys" target="_blank">OpenAI</a>
